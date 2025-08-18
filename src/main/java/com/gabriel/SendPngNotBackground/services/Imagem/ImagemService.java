@@ -39,30 +39,23 @@ public class ImagemService {
         Path arquivoTemporario = Files.createTempFile("upload-", extension);
         Files.write(arquivoTemporario, imgDecoder);
 
-        ResponseEntity<String> response = RequestApiBackgroundBg.Request(API_KEY, arquivoTemporario, imageType);
+        ResponseEntity<byte[]> response = RequestApiBackgroundBg.Request(API_KEY, arquivoTemporario, imageType);
         HttpHeaders respHeaders = response.getHeaders();
         MediaType respType = respHeaders.getContentType();
 
-
         if (respType != null && (respType.equals(MediaType.IMAGE_PNG) || respType.equals(MediaType.IMAGE_JPEG))) {
-
-            byte[] imageBytes = response.getBody().getBytes();
-
+            byte[] imageBytes = response.getBody();
             String imgBase64Respose = Base64.getEncoder().encodeToString(imageBytes);
-
             ImagemModels imagemModelsResponse =  new ImagemModels();
             imagemModelsResponse.setImagemBase64(imgBase64Respose);
             imagemModelsResponse.setMensagem("Aqui esta sua foto");
-
-
             return  ResponseEntity.ok().body(imagemModelsResponse);
-
         } else if (respType != null && respType.equals(MediaType.APPLICATION_JSON)) {
-            System.out.println("erro " + response.getBody());
+            System.out.println("erro " + new String(response.getBody()));
              return  ResponseEntity.internalServerError().build();
         } else {
             System.out.println(  respType);
-            System.out.println( response.getBody());
+            System.out.println( new String(response.getBody()));
             return  ResponseEntity.internalServerError().build();
         }
     }

@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class RequestApiBackgroundBg {
-    public static ResponseEntity<String> Request(String apiKey, Path arquivo, String imageType) throws IOException {
+    public static ResponseEntity<byte[]> Request(String apiKey, Path arquivo, String imageType) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.remove.bg/v1.0/removebg";
 
@@ -41,7 +41,7 @@ public class RequestApiBackgroundBg {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         try {
-            return restTemplate.postForEntity(url, requestEntity, String.class);
+            return restTemplate.postForEntity(url, requestEntity, byte[].class);
         } catch (HttpClientErrorException e) {
             System.out.println("API error: " + e.getResponseBodyAsString());
             throw e;
